@@ -12,15 +12,26 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.adapter.VacanciesAdapter
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
+
+    lateinit var recyclerView: RecyclerView
+    private lateinit var vacanciesAdapter: VacanciesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        recyclerView = binding.recyclerView
+        vacanciesAdapter = VacanciesAdapter(emptyList())
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = vacanciesAdapter
 
         binding.button.setOnClickListener {
             fetchVacancies()
@@ -46,20 +57,14 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<VacanciesResponse>, response: Response<VacanciesResponse>) {
                 if (response.isSuccessful) {
                     response.body()?.let { vacanciesResponse ->
-                        val vacancyNames = vacanciesResponse.results.vacancies.joinToString("\n") { vacancy ->
-                            vacancy.details.company.name
-                        }
-
-                        binding.textView.text = vacancyNames
+                        vacanciesAdapter.updateVacancies(vacanciesResponse.results.vacancies)
                     }
                 } else {
-                    Log.e("Error", "Response not successful: ${response.code()}")
+                    Log.d("MyLog", "Response not successful: ${response.code()}")
                 }
-
             }
-
             override fun onFailure(call: Call<VacanciesResponse>, t: Throwable) {
-                Log.e("Error", "Failed to fetch vacancies: ${t.message}")
+                Log.d("MyLog", "Failed to fetch vacancies: ${t.message}")
             }
         })
     }

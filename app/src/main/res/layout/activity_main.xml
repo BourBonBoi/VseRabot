@@ -11,9 +11,9 @@
         android:layout_height="wrap_content"
         android:text="Load Vacancies" />
 
-    <TextView
-        android:id="@+id/textView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp" />
+        android:layout_height="match_parent" />
+
 </LinearLayout>
